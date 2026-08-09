@@ -504,7 +504,7 @@ a {
 
 .premium-scroll-scene {
   position: relative;
-  height: 320svh;
+  height: 260svh;
 }
 
 .premium-scroll-sticky {
@@ -1828,7 +1828,7 @@ a {
 
   .payment-section { padding-bottom: 92px; }
 
-  .premium-scroll-scene { height: 260svh; }
+  .premium-scroll-scene { height: 225svh; }
 
   .premium-scroll-layout {
     padding-block: 82px 36px;

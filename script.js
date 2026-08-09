@@ -598,7 +598,15 @@ async function setupPremiumScrollVideo() {
   function readScrollProgress() {
     const rect = premiumScene.getBoundingClientRect();
     const scrollDistance = Math.max(1, premiumScene.offsetHeight - window.innerHeight);
-    targetProgress = clamp(-rect.top / scrollDistance);
+    const isCompactViewport = window.matchMedia('(max-width: 760px)').matches;
+    const earlyStart = window.innerHeight * (isCompactViewport ? .72 : .65);
+    const earlyEnd = window.innerHeight * (isCompactViewport ? .14 : .22);
+    const activeDistance = Math.max(
+      window.innerHeight,
+      scrollDistance - earlyEnd + earlyStart,
+    );
+
+    targetProgress = clamp((earlyStart - rect.top) / activeDistance);
 
     if (!animationFrame) {
       previousTime = 0;
@@ -608,7 +616,7 @@ async function setupPremiumScrollVideo() {
 
   function renderFrame(now) {
     const elapsed = previousTime ? Math.min(now - previousTime, 40) : 16;
-    const smoothing = 1 - Math.exp(-elapsed / 240);
+    const smoothing = 1 - Math.exp(-elapsed / 155);
     previousTime = now;
     renderedProgress += (targetProgress - renderedProgress) * smoothing;
 
@@ -625,7 +633,7 @@ async function setupPremiumScrollVideo() {
       }
     }
 
-    const copyProgress = clamp((renderedProgress - .72) / .18);
+    const copyProgress = clamp((renderedProgress - .46) / .17);
     premiumCopy.style.opacity = copyProgress.toFixed(3);
     premiumCopy.style.pointerEvents = copyProgress > .85 ? 'auto' : 'none';
     premiumCopy.style.transform = `translateY(${((1 - copyProgress) * 28).toFixed(2)}px)`;
