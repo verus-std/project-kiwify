@@ -14,7 +14,7 @@ Landing page conceitual da Kiwify desenvolvida pela **Verus Studio**, com foco e
 - CSS responsivo com animações nativas
 - JavaScript sem framework
 - [Lenis](https://github.com/darkroomengineering/lenis) para scroll suave
-- GitHub Actions e GitHub Pages para publicação contínua
+- GitHub Pages com publicação direta pela branch `main`
 
 ## Desenvolvimento local
 
@@ -37,7 +37,7 @@ O comando gera a pasta `dist/`, copia apenas os arquivos públicos e inclui a ve
 
 ## Publicação
 
-Todo push na branch `main` executa o workflow em `.github/workflows/pages.yml` e publica o conteúdo de `dist/` no GitHub Pages.
+O GitHub Pages publica diretamente a raiz da branch `main`. Como o site é estático, os arquivos fonte já ficam prontos para servir sem uma etapa de build no servidor.
 
 ## Organização dos assets
 
