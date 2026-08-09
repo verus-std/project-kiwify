@@ -21,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <link rel="icon" href="assets/branding/favicon.png?v=2" type="image/png" sizes="512x512">
   <link rel="apple-touch-icon" href="assets/branding/favicon.png?v=2">
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body id="topo">
   <header class="site-header">
@@ -352,13 +352,17 @@
           <p>Você só paga se vender</p>
         </div>
         <article class="price-card reveal delay-1">
-          <div class="price"><strong>8,99%</strong><span>+ R$2,49</span></div>
+          <div class="price" aria-label="Tarifa de 8,99 por cento mais 2 reais e 49 centavos por venda aprovada">
+            <strong>8,99<sup>%</sup></strong>
+            <span><b>+ R$2,49</b><small>por venda aprovada</small></span>
+          </div>
           <ul>
             <li>Receba em cartão em 15 dias, boletos em 1 dia e Pix instantaneamente</li>
             <li>Possibilidade de receber cartões em 2 dias</li>
           </ul>
           <a class="button button-primary" href="#topo">Cadastrar agora</a>
         </article>
+        <p class="store-caption reveal delay-2">Disponível para Android e iOS</p>
         <div class="store-badges reveal delay-2">
           <img src="assets/google-play.png" alt="Disponível no Google Play">
           <img src="assets/app-store.png" alt="Disponível na App Store">
