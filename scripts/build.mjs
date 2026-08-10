@@ -27,6 +27,10 @@ const localReferences = new Set();
 const htmlReferencePattern = /(?:src|href)="([^"]+)"/g;
 const cssReferencePattern = /url\(["']?([^"')]+)["']?\)/g;
 
+for (let frame = 1; frame <= 48; frame += 1) {
+  localReferences.add(`assets/notebook-frames/frame-${String(frame).padStart(3, '0')}.jpg`);
+}
+
 for (const htmlFilename of ['index.html', 'index-v3.html']) {
   const sourceHtml = await readFile(join(projectRoot, htmlFilename), 'utf8');
   const productionHtml = sourceHtml.replace(

@@ -26,11 +26,37 @@ const counters = document.querySelectorAll('[data-counter]');
 const heroVideo = document.querySelector('.hero-media');
 const scene = document.querySelector('[data-scroll-video]');
 const sceneVideo = scene?.querySelector('.scene-video');
+const sceneFrame = scene?.querySelector('.scene-frame');
 const sceneCopy = scene?.querySelector('.scene-copy');
 const progressBar = document.querySelector('[data-progress]');
 const dock = document.querySelector('[data-dock]');
 const hero = document.querySelector('.hero');
 const pricing = document.querySelector('#taxas');
+const sceneMobileQuery = window.matchMedia('(max-width: 760px)');
+const notebookFrameCount = 48;
+const notebookFrames = [];
+let notebookFramesQueued = false;
+
+function notebookFrameSource(index) {
+  return `assets/notebook-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
+}
+
+function preloadNotebookFrames() {
+  if (notebookFramesQueued || !sceneFrame || !sceneMobileQuery.matches) return;
+  notebookFramesQueued = true;
+
+  const load = () => {
+    for (let index = 0; index < notebookFrameCount; index += 1) {
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = notebookFrameSource(index);
+      notebookFrames[index] = image;
+    }
+  };
+
+  if ('requestIdleCallback' in window) requestIdleCallback(load, { timeout: 1200 });
+  else window.setTimeout(load, 120);
+}
 
 const lenis = !reduceMotion && window.Lenis
   ? new window.Lenis({
@@ -86,6 +112,7 @@ function closeNav() {
   burger?.setAttribute('aria-expanded', 'false');
   burger?.setAttribute('aria-label', 'Abrir menu');
   nav?.classList.remove('is-open');
+  topbar?.classList.remove('is-menu-open');
   document.body.classList.remove('nav-open');
   lenis?.start();
 }
@@ -95,6 +122,7 @@ burger?.addEventListener('click', () => {
   burger.setAttribute('aria-expanded', String(!open));
   burger.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
   nav?.classList.toggle('is-open', !open);
+  topbar?.classList.toggle('is-menu-open', !open);
   document.body.classList.toggle('nav-open', !open);
   if (open) lenis?.start();
   else lenis?.stop();
@@ -583,7 +611,18 @@ function waitFor(video, eventName, timeout = 5000) {
   ]);
 }
 
+function hydrateSceneVideo() {
+  if (!sceneVideo || sceneVideo.currentSrc || !sceneVideo.dataset.src) return;
+
+  const source = document.createElement('source');
+  source.src = sceneVideo.dataset.src;
+  source.type = 'video/mp4';
+  sceneVideo.append(source);
+  sceneVideo.load();
+}
+
 async function ensureSeekable() {
+  hydrateSceneVideo();
   await waitFor(sceneVideo, 'loadeddata');
 
   const last = sceneVideo.seekable.length - 1;
@@ -607,15 +646,18 @@ async function ensureSeekable() {
 }
 
 async function setupScene() {
-  if (!scene || !sceneVideo || !sceneCopy) return;
+  if (!scene || !sceneVideo || !sceneFrame || !sceneCopy) return;
 
-  await ensureSeekable();
+  if (sceneMobileQuery.matches) preloadNotebookFrames();
+  else await ensureSeekable();
   scene.classList.add('is-ready');
   sceneVideo.pause();
 
   if (reduceMotion) {
     const showLastFrame = () => {
-      if (Number.isFinite(sceneVideo.duration)) {
+      if (sceneMobileQuery.matches) {
+        sceneFrame.src = notebookFrameSource(notebookFrameCount - 1);
+      } else if (Number.isFinite(sceneVideo.duration)) {
         sceneVideo.currentTime = Math.max(0, sceneVideo.duration - .05);
       }
     };
@@ -625,7 +667,8 @@ async function setupScene() {
     sceneCopy.style.transform = 'none';
     sceneCopy.inert = false;
 
-    if (sceneVideo.readyState >= 1) showLastFrame();
+    if (sceneMobileQuery.matches) showLastFrame();
+    else if (sceneVideo.readyState >= 1) showLastFrame();
     else sceneVideo.addEventListener('loadedmetadata', showLastFrame, { once: true });
     return;
   }
@@ -658,7 +701,14 @@ async function setupScene() {
 
     if (Math.abs(target - rendered) < .0005) rendered = target;
 
-    if (sceneVideo.readyState >= 1 && Number.isFinite(sceneVideo.duration)) {
+    if (sceneMobileQuery.matches) {
+      const frameIndex = Math.min(notebookFrameCount - 1, Math.round(rendered * (notebookFrameCount - 1)));
+
+      if (sceneFrame.dataset.frame !== String(frameIndex)) {
+        sceneFrame.dataset.frame = String(frameIndex);
+        sceneFrame.src = notebookFrameSource(frameIndex);
+      }
+    } else if (sceneVideo.readyState >= 1 && Number.isFinite(sceneVideo.duration)) {
       const time = rendered * Math.max(0, sceneVideo.duration - (1 / 24));
       if (Math.abs(sceneVideo.currentTime - time) > 1 / 48) sceneVideo.currentTime = time;
     }
@@ -674,6 +724,11 @@ async function setupScene() {
   }
 
   sceneVideo.addEventListener('loadedmetadata', read, { once: true });
+  sceneMobileQuery.addEventListener('change', (event) => {
+    if (event.matches) preloadNotebookFrames();
+    else ensureSeekable().then(read);
+    read();
+  });
   scrollTasks.push(read);
   window.addEventListener('resize', read);
   window.addEventListener('pageshow', read);
