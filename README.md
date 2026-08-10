@@ -4,9 +4,10 @@ Landing page conceitual da Kiwify desenvolvida pela **Verus Studio**, com foco e
 
 ![Prévia do projeto](assets/og-image.png)
 
-## Demo
+## Demos
 
-[Acessar o projeto no GitHub Pages](https://verus-std.github.io/project-kiwify/)
+- [Versão principal](https://verus-std.github.io/project-kiwify/)
+- [Versão 3](https://verus-std.github.io/project-kiwify/index-v3.html)
 
 ## Tecnologias
 
@@ -25,7 +26,7 @@ npm ci
 npm run dev
 ```
 
-O projeto ficará disponível em `http://127.0.0.1:4173/`.
+O projeto ficará disponível em `http://127.0.0.1:4173/`. A V3 pode ser acessada em `http://127.0.0.1:4173/index-v3.html`.
 
 ## Build
 

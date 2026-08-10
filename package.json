@@ -7,7 +7,7 @@
     "build": "node scripts/build.mjs",
     "dev": "npm run build && python3 -m http.server 4173 --bind 127.0.0.1 --directory dist",
     "serve": "npm run dev",
-    "check": "node --check script.js && npm run build"
+    "check": "node --check script.js && node --check script-v3.js && npm run build"
   },
   "keywords": [
     "landing-page",

@@ -1,6 +1,7 @@
 node_modules/
 dist/
 source-assets/
+.claude/
 
 .DS_Store
 *.log
